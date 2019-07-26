@@ -13,7 +13,7 @@ export class Header extends Component{
 
     render(){
 
-        const { isAuthenticated, user } = this.props.auth;
+        const { isAuthenticated } = this.props.auth;
 
         const guestLinks = (
             <ul className="navbar-nav ml-auto mt-2 mt-lg-0">

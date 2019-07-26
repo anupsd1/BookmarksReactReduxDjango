@@ -62,6 +62,7 @@ export class Leads extends Component {
 const mapStateToProps = state => ({
     //props: state.reducer.object(or array) which returns whatever is described according to the action
     leads: state.leads.leads,
+    user: state.auth.isAuthenticated
 })
 
 export default connect(mapStateToProps, { addLead, getLeads, deleteLead })(Leads);

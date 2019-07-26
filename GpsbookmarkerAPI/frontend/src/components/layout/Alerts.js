@@ -2,6 +2,7 @@ import React, { Component, Fragment } from 'react';
 import { withAlert } from 'react-alert';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
+import { Link, Redirect } from 'react-router-dom'
 
 export class Alerts extends Component {
     static propTypes = {
@@ -27,7 +28,15 @@ export class Alerts extends Component {
             if(error.msg.user)
                 alert.error(`User: ${error.msg.user.join()}`);
             if(error.msg.non_field_errors)
+                // join() is used here because an array with one error is returned
                 alert.error(error.msg.non_field_errors.join())
+            if(error.msg.detail){
+                // join() cannot be used here because an array is not returned
+                
+                alert.error(`${error.msg.detail}`)
+                // return <Redirect to='/login' />;
+                // this.forceUpdate();
+            }
         }
 
         if(message !== prevProps.message){
@@ -46,6 +55,7 @@ export class Alerts extends Component {
     // }
 
     render(){
+        
         return  <Fragment /> ;
     }
 }

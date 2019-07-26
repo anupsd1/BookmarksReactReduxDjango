@@ -9,6 +9,7 @@ import Dashboard from './leads/Dashboard';
 import Alerts from './layout/Alerts';
 import Login from './accounts/Login';
 import Register from './accounts/Register';
+
 import PrivateRoute from './common/PrivateRoute';
 import store from '../store';
 
@@ -44,8 +45,10 @@ class App extends Component{
                         <div className="container">
                             <Switch>
                                 <PrivateRoute exact path="/" component={Dashboard} />
+                                
                                 <Route exact path="/register" component={Register} />
                                 <Route exact path='/login' component={Login} />
+                                
                             </Switch>
                         </div>
                     </Fragment>

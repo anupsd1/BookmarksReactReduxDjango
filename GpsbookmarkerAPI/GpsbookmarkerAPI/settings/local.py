@@ -30,6 +30,10 @@ ALLOWED_HOSTS = []
 
 # Application definition
 
+# VERY IMPORTANT!!!
+# Knox provides one token per call to the login view -
+# allowing each client to have its own token which is deleted on the server side when the client logs out.
+
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -37,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
     'rest_framework',
     'knox',
     'rest_auth',
@@ -45,7 +50,12 @@ INSTALLED_APPS = [
     'LocalUser',
     'frontend',
     # 'corsheaders',
+    'oauth2_provider',
+    'social_django',
+    'rest_framework_social_oauth2',
 ]
+
+SITE_ID = 1
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
@@ -53,6 +63,8 @@ REST_FRAMEWORK = {
                                         'knox.auth.TokenAuthentication',
                                        # 'rest_framework.authentication.TokenAuthentication',
                                        # 'rest_framework.authentication.BasicAuthentication',
+                                        'oauth2_provider.contrib.rest_framework.OAuth2Authentication',
+                                        'rest_framework_social_oauth2.authentication.SocialAuthentication',
 
                                        ),
     'DEFAULT_PERMISSION_CLASSES':
@@ -68,6 +80,25 @@ REST_FRAMEWORK = {
 LOGIN_URL = '/api/auth/login/'
 
 
+AUTHENTICATION_BACKENDS = (
+
+    # Django
+    'django.contrib.auth.backends.ModelBackend',
+
+
+    # Facebook OAuth2
+    'social_core.backends.facebook.FacebookAppOAuth2',
+    'social_core.backends.facebook.FacebookOAuth2',
+
+    # Google backends
+    # 'social_core.backends.google.GoogleAppOAuth2',
+    'social_core.backends.google.GoogleOAuth2',
+
+    # django-rest-framework-social-oauth2
+    'rest_framework_social_oauth2.backends.DjangoOAuth2',
+
+)
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -77,7 +108,21 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'social_django.middleware.SocialAuthExceptionMiddleware',
 ]
+
+
+# SOCIALACCOUNT_PROVIDERS = {
+#     'google': {
+#         'SCOPE': [
+#             'profile',
+#             'email',
+#         ],
+#         'AUTH_PARAMS': {
+#             'access_type': 'online',
+#         }
+#     }
+# }
 
 ROOT_URLCONF = 'GpsbookmarkerAPI.urls'
 
@@ -92,6 +137,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'social_django.context_processors.backends',
+                'social_django.context_processors.login_redirect',
             ],
         },
     },
@@ -145,7 +192,7 @@ USE_TZ = True
 
 
 # Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/2.1/howto/static-files/
+# https://docs.djangoproject.com/en/2.1/howto/tatic-files/
 
 STATIC_URL = '/static/'
 
@@ -165,5 +212,32 @@ REST_FRAMEWORK = {
 #     'USERSERIALIZER': 'auth.serializers.UserRetrieveSerializer'
 # }
 
-#very important to do this. The format is appname.modelname
+
+# Facebook configuration
+SOCIAL_AUTH_FACEBOOK_KEY = '455060218662230'
+SOCIAL_AUTH_FACEBOOK_SECRET = 'aa20d0080ca5e9abbfa1c30e7d32b0bf'
+
+# Define SOCIAL_AUTH_FACEBOOK_SCOPE to get extra permissions from facebook.
+# Email is not sent by default, to get it, you must request the email permission:
+SOCIAL_AUTH_FACEBOOK_SCOPE = ['email']
+SOCIAL_AUTH_FACEBOOK_PROFILE_EXTRA_PARAMS = {
+    'fields': 'id, name, email'
+}
+
+
+#GOOGLE CONFIGURATION
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = '177417284910-d4d0bqon86reqfveubkk3r9gopld9gfh.apps.googleusercontent.com'
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = '5ribOkIHejG4umUTWKrpbOn9'
+
+SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = ['email']
+
+
+
+
+
+LOGIN_REDIRECT_URL = '/'
+# ACCOUNT_EMAIL_REQUIRED = 'True'
+# ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
 AUTH_USER_MODEL = 'LocalUser.LocalUser'
+
+

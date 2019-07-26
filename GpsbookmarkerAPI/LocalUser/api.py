@@ -1,5 +1,6 @@
-from rest_framework import generics, permissions, viewsets
+from rest_framework import generics, permissions, viewsets, status
 from rest_framework.response import Response
+from requests.exceptions import HTTPError
 # The following import and then adding it to authentication classes is very important. Without this:
 # the error was Authentication credentials were not provided.
 # Took 24 hours to figure this out
@@ -9,10 +10,20 @@ from knox.auth import TokenAuthentication
 from django.contrib.auth.mixins import LoginRequiredMixin
 from rest_framework.settings import api_settings
 from knox.models import AuthToken
+from knox.settings import knox_settings
+from rest_framework.serializers import DateTimeField
+from django.utils import timezone
+
 from re import sub
 from .models import LocalUser
 from django.shortcuts import get_object_or_404
-from .serializers import UserSerializer, RegisterSerializer, LoginSerializer
+from .serializers import UserSerializer, RegisterSerializer, LoginSerializer, SocialSerializer
+
+
+from social_django.utils import load_strategy, load_backend
+from social_core.backends.oauth import BaseOAuth2
+from social_core.exceptions import MissingBackend, AuthTokenError, AuthForbidden
+
 
 # The following is very important, otherwise django's basic token authentication is used
 # authentication_classes = (
@@ -65,6 +76,22 @@ class LoginAPI(generics.GenericAPIView):
 
     serializer_class = LoginSerializer
 
+    def get_token_ttl(self):
+        return knox_settings.TOKEN_TTL
+
+    def get_token_limit_per_user(self):
+        return knox_settings.TOKEN_LIMIT_PER_USER
+
+    def get_user_serializer_class(self):
+        return knox_settings.USER_SERIALIZER
+
+    def get_expiry_datetime_format(self):
+        return knox_settings.EXPIRY_DATETIME_FORMAT
+
+    def format_expiry_datetime(self, expiry):
+        datetime_format = self.get_expiry_datetime_format()
+        return DateTimeField(format=datetime_format).to_representation(expiry)
+
     def post(self, request, *args, **kwargs):
         print("inside post")
         print(request.data)
@@ -78,11 +105,11 @@ class LoginAPI(generics.GenericAPIView):
         # user = serializer.validate_data
         # which gave an error
         user = serializer.validated_data
-        login(request, user)
+        # login(request, user)
         return Response({
             "user": UserSerializer(user, context=self.get_serializer_context()).data,
             # "token": AuthToken.objects.create(user)[1]
-            "token": AuthToken.objects.create(user)[1],
+            "token": AuthToken.objects.create(user=user)[1],
             # "token": serializer.serialize('json', AuthToken.objects.create(user=user))
             # "mytoken": AuthToken.objects.create(user=user)
         })
@@ -166,3 +193,103 @@ class UserViewSet(viewsets.ModelViewSet):
     def retrieve(self, request, pk=None):
         print("User is "+self.request.user)
 
+
+class SocialLoginView(generics.GenericAPIView):
+    serializer_class = SocialSerializer
+    permission_classes = [
+        permissions.AllowAny
+    ]
+
+    authentication_classes = (
+        TokenAuthentication,
+    )
+
+    def post(self, request):
+        # Authenticate through provider and access_token
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        provider = serializer.data.get('provider', None)
+        strategy = load_strategy(request)
+
+        try:
+            backend = load_backend(strategy=strategy, name=provider, redirect_uri=None)
+        except:
+            return Response(
+                {
+                    'error': "Please provide a valid provider"
+                },
+                status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            if isinstance(backend, BaseOAuth2):
+                access_token = serializer.data.get('access_token')
+            user = backend.do_auth(access_token)
+        except HTTPError as error:
+            return Response({
+                'error': {
+                    'access_token': "Invalid Token",
+                    "details": str(error)
+                }
+            }, status=status.HTTP_400_BAD_REQUEST)
+        except AuthTokenError as error:
+            return Response({
+                "error": "Invalid credentials",
+                "details": str(error)
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            authenticated_user = backend.do_auth(access_token, user=user)
+
+        except HTTPError as error:
+            return Response({
+                "error": "Invalid token",
+                "details": str(error)
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        except AuthForbidden as error:
+            return Response({
+                "error": "Invalid token",
+                "details": str(error)
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        if authenticated_user and authenticated_user.is_active:
+            # generate Knox token
+            login(request, authenticated_user)
+            data = {
+                "token": AuthToken.objects.create(authenticated_user)[1]
+            }
+
+            response = {
+                "user": UserSerializer(authenticated_user, context=self.get_serializer_context()).data,
+                "token": data.get('token')
+            }
+
+            return Response(response)
+
+
+
+# class SocialLoginView(generics.GenericAPIView):
+#     authentication_classes = (
+#         TokenAuthentication,
+#     )
+#
+#     serializer_class = SocialSerializer
+#
+#     def post(self, request, *args, **kwargs):
+#         print("inside post")
+#         print(request.data)
+#         serializer = self.get_serializer(data=request.data)
+#         # serializer = self.serializer_class(data=request.data, context={'request': request})
+#         print("GOT SERIALIZER? ")
+#         serializer.is_valid(raise_exception=True)
+#         print("Done validation? ")
+#
+#
+#         # login(request, user)
+#         return Response({
+#             "user": UserSerializer(user, context=self.get_serializer_context()).data,
+#             # "token": AuthToken.objects.create(user)[1]
+#             "token": AuthToken.objects.create(user=user)[1],
+#             # "token": serializer.serialize('json', AuthToken.objects.create(user=user))
+#             # "mytoken": AuthToken.objects.create(user=user)
+#         })

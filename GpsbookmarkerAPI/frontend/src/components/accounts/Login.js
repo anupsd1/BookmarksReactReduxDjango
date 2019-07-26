@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Link, Redirect } from 'react-router-dom'
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { login } from '../../actions/auth'
+import { login, gmaillogin } from '../../actions/auth'
 
 import FacebookLogin from 'react-facebook-login';
 import GoogleLogin from 'react-google-login';
@@ -11,6 +11,8 @@ export class Login extends Component{
     state = {
         username: '',
         password: '',
+        provider: '',
+        accessToken: ''
     };
 
     static propTypes = {
@@ -46,13 +48,28 @@ export class Login extends Component{
 
 
     responseGoogle = (googleUser) => {
-        
+        // console.log(googleUser);
         if(! googleUser.error)
         {    
-            var id_token = googleUser.getAuthResponse().id_token;
+            // var id_token = googleUser.getAuthResponse().id_token;
+            var access_token = googleUser.getAuthResponse().access_token;
+            // console.log(access_token)
             var googleId = googleUser.getId();
-            console.log({googleId});
-            console.log({accessToken: id_token});
+            var gemail = googleUser.profileObj.email;
+            // console.log(googleUser.getAuthResponse())
+            // console.log(gemail)
+
+            // console.log(googleUser)
+            // console.log({googleId});
+            // console.log({accessToken: id_token});
+            this.setState({
+                provider: 'google-oauth2',
+                accessToken: access_token,
+                
+            })
+            
+            this.props.gmaillogin(this.state.provider, this.state.accessToken)
+            
         }
     }
     
@@ -78,9 +95,11 @@ export class Login extends Component{
         )
 
 
-        if(this.props.isAuthenticated) {
+        if(this.props.isAuthenticated) 
+        {
             return <Redirect to='/' />;
         }
+        
 
         const { username, password } = this.state;
         this.state;
@@ -138,7 +157,8 @@ export class Login extends Component{
 }
 
 const mapStateToProps = state => ({
-    isAuthenticated: state.auth.isAuthenticated
+    isAuthenticated: state.auth.isAuthenticated,
+    isPremium: state.auth.isPremium
 })
 
-export default connect(mapStateToProps, { login })(Login);
+export default connect(mapStateToProps, { login, gmaillogin })(Login);

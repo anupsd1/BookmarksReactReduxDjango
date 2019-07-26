@@ -17,10 +17,7 @@ export class Form extends Component {
        // user: ''
     }
 
-    componentDidMount(){
-        //console.log(this.props.user)
-        //console.log(user)
-    }
+    
 
     // static propTypes = {
     //     addLead: PropTypes.func.isRequired

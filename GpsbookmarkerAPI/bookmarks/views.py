@@ -40,6 +40,7 @@ class IsPremiumUser(permissions.BasePermission):
 
     def has_permission(self, request: HttpRequest, view: View):
         # return request.user.has_perm('appname.permname') #Django ACL Perms
+        print(request.user.premium)
         return request.user.premium
 
     def has_object_permission(self, request: HttpRequest, view: View, obj):
@@ -130,9 +131,17 @@ class BookmarkBrowseViewSet(
     def get_queryset(self):
         # return Bookmark.objects.filter(user=self.request.user)
         if not self.request.user.is_staff:
-            return Bookmark.objects.filter(user=self.request.user)
+            qs = Bookmark.objects.filter(user=self.request.user)
+            if qs:
+                return qs
+            else:
+                return None
         else:
-            return Bookmark.objects.all()
+            qs = Bookmark.objects.all()
+            if qs:
+                return qs
+            else:
+                return None
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)

@@ -98,3 +98,22 @@ class LoginSerializer(serializers.Serializer):
         if user and user.is_active:
             return user
         raise serializers.ValidationError("Incorrect Credentials ")
+
+
+# Serializer which accepts an OAuth2 access token and provider
+class SocialSerializer(serializers.Serializer):
+    provider = serializers.CharField(max_length=255, required=True)
+    access_token = serializers.CharField(max_length=4096, required=True, trim_whitespace=True)
+
+    authentication_classes = (
+        TokenAuthentication,
+    )
+
+    # def validate(self, data):
+    #     print("Validattingg......")
+    #     print("in vaidate")
+    #     user = authenticate(**data)
+    #     # print(user)
+    #     if user and user.is_active:
+    #         return user
+    #     raise serializers.ValidationError("Incorrect Credentials ")

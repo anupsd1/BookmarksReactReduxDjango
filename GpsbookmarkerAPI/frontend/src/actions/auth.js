@@ -24,7 +24,8 @@ export const loadUser = () => (dispatch, getState) => {
         .then(res=>{
             dispatch({
                 type: USER_LOADED,
-                payload: res.data
+                payload: res.data,
+                premium: res.data.premium
             })
         }).catch(err => {
             dispatch(returnErrors(err.response.data, err.response.status))
@@ -52,6 +53,42 @@ export const login = (username, password) => dispatch => {
     axios
         .post("api/auth/login/", body, config)
         .then(res => {
+            // console.log(res.data.user.premium)
+            dispatch({
+                type: LOGIN_SUCCESS,
+                payload: res.data,
+                premium: res.data.user.premium
+            })
+        })
+        .catch(err => {
+            dispatch(returnErrors(err.response.data, err.response.status));
+            dispatch({
+                type: LOGIN_FAIL
+            })
+        })
+}
+
+
+// LOGIN USER VIA GMAIL
+export const gmaillogin = ( provider, access_token ) => dispatch => {
+    // Headers
+    const config = {
+        headers: {
+            "Content-Type": "application/json"
+        }
+    };
+
+    // Request body
+    const body = JSON.stringify({
+        provider, access_token
+    })
+
+   // console.log("body="+body);
+
+    axios
+        .post('newauth/login/', body, config)
+        .then(res => {
+            console.log(res.data)
             dispatch({
                 type: LOGIN_SUCCESS,
                 payload: res.data
@@ -64,6 +101,8 @@ export const login = (username, password) => dispatch => {
             })
         })
 }
+
+
 
 
 // REGISTER USER
