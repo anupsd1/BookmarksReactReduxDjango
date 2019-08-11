@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import { Link, Redirect } from 'react-router-dom'
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
@@ -17,6 +17,7 @@ export class Login extends Component{
 
     static propTypes = {
         login: PropTypes.func.isRequired,
+        isLoading: PropTypes.bool,
         isAuthenticated: PropTypes.bool
     }
 
@@ -48,7 +49,7 @@ export class Login extends Component{
 
 
     responseGoogle = (googleUser) => {
-        // console.log(googleUser);
+        console.log(googleUser);
         if(! googleUser.error)
         {    
             // var id_token = googleUser.getAuthResponse().id_token;
@@ -56,6 +57,8 @@ export class Login extends Component{
             // console.log(access_token)
             var googleId = googleUser.getId();
             var gemail = googleUser.profileObj.email;
+            var fullname = googleUser.profileObj.name;
+            console.log(fullname + " "+gemail)
             // console.log(googleUser.getAuthResponse())
             // console.log(gemail)
 
@@ -68,7 +71,7 @@ export class Login extends Component{
                 
             })
             
-            this.props.gmaillogin(this.state.provider, this.state.accessToken)
+            // this.props.gmaillogin(this.state.provider, this.state.accessToken)
             
         }
     }
@@ -100,17 +103,23 @@ export class Login extends Component{
             return <Redirect to='/' />;
         }
         
+        const isLoading = this.props.isLoading;
 
-        const { username, password } = this.state;
-        this.state;
-        return(
-            <div className="col-md-6 m-auto">
-                <div className='card card-body mt-5'>
+        const loadingContent = (
+                                    <div className='card card-body mt-5'>
+                                        <h2 className="text-center">
+                                            Loading...
+                                        </h2>
+                                    </div>
+                                )
+
+
+        const loginForm = (
+            <div className='card card-body mt-5'>
                     <h2 className="text-center">
                         Login
                     </h2>
-
-                    {googleContent}
+                {googleContent}
 
                     {fbContent}
 
@@ -151,13 +160,24 @@ export class Login extends Component{
 
                     </form>
                 </div>
+        )
+        const { username, password } = this.state;
+        return(
+            <Fragment>
+            
+            <div className="col-md-6 m-auto">
+                
+            { isLoading ? loadingContent : loginForm }
+                    
             </div>
+            </Fragment>
         )
     }
 }
 
 const mapStateToProps = state => ({
     isAuthenticated: state.auth.isAuthenticated,
+    isLoading: state.auth.isLoading,
     isPremium: state.auth.isPremium
 })
 

@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { GET_LEADS, DELETE_LEAD, ADD_LEAD, GET_ERRORS } from './types';
+import { GET_LEADS, DELETE_LEAD, ADD_LEAD, GET_ERRORS, MAKE_PREMIUM } from './types';
 import cookieClient from 'react-cookies';
 import {tokenConfig} from './auth';
 import {createMessage, returnErrors} from './messages';
@@ -9,6 +9,20 @@ import cookie from 'react-cookies';
 //axios.defaults.withCredentials = true;
 //axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
 //axios.defaults.xsrfCookieName = "csrftoken";
+
+
+// export const makePremium = () => (dispatch, getState) => {
+//     axios
+//         .post("api/auth/premium/", tokenConfig(getState))
+//         .then(res => {
+//             dispatch({
+//                 type: MAKE_PREMIUM,
+//                 payload: res.data['results']
+
+//             })
+                        
+//         })
+// }
 
 
 export const getLeads = () => (dispatch, getState) => {
@@ -103,9 +117,11 @@ export const deleteLead = id => (dispatch, getState) => {
 
 //ADD LEAD- 
 export const addLead = lead => (dispatch, getState) => {
+    console.log("FROM ACTIONS = "+lead)
     axios
         .post("api/bookmarks/", lead, tokenConfig(getState))
         .then(res=>{
+            console.log(res)
             dispatch(createMessage({
                 addLead: "Bookmark Added"
             }))

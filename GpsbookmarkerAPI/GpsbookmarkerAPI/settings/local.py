@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 """
 
 import os
+from email_info import EMAIL_USE_TLS, EMAIL_HOST, EMAIL_HOST_PASSWORD, EMAIL_HOST_USERNAME, EMAIL_PORT, EMAIL_BACKEND
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -24,6 +25,15 @@ SECRET_KEY = 'lpxv=!)@yvy_4)v+6(!3c$oy36xbtw93(h8$&#qq4ifx%6+__f'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+
+EMAIL_BACKEND = EMAIL_BACKEND
+EMAIL_USE_TLS = EMAIL_USE_TLS
+EMAIL_HOST = EMAIL_HOST
+EMAIL_HOST_USER = EMAIL_HOST_USERNAME
+EMAIL_HOST_PASSWORD = EMAIL_HOST_PASSWORD
+EMAIL_PORT = EMAIL_PORT
+
+
 
 ALLOWED_HOSTS = []
 
@@ -96,6 +106,8 @@ AUTHENTICATION_BACKENDS = (
 
     # django-rest-framework-social-oauth2
     'rest_framework_social_oauth2.backends.DjangoOAuth2',
+
+    'LocalUser.views.EmailBackend'
 
 )
 

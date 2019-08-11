@@ -40,12 +40,12 @@ class IsPremiumUser(permissions.BasePermission):
 
     def has_permission(self, request: HttpRequest, view: View):
         # return request.user.has_perm('appname.permname') #Django ACL Perms
-        print(request.user.premium)
-        return request.user.premium
+        print(request.user.profile_id.premium)
+        return request.user.profile_id.premium
 
     def has_object_permission(self, request: HttpRequest, view: View, obj):
         # See if obj belongs to user?
-        return request.user.premium
+        return request.user.profile_id.premium
 
 
 # class BookmarkViewSet(viewsets.ModelViewSet):
@@ -85,7 +85,7 @@ class BookmarkViewSet(
         # print(self.request.header)
         # print("USER IS "+self.request.user.username)
         if not self.request.user.is_staff:
-            return Bookmark.objects.filter(user=self.request.user)
+            return Bookmark.objects.filter(user=self.request.user.profile_id)
         else:
             return Bookmark.objects.all()
 
@@ -96,7 +96,7 @@ class BookmarkViewSet(
         # if we would have used CreateModelMixin,
         # then we would not have been able to check
         # the following condition
-        if request.data['user'] != str(request.user.id):
+        if request.data['user'] != str(request.user.profile_id.id):
             raise PermissionDenied("You cannot make bookmarks for other people!")
         serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)

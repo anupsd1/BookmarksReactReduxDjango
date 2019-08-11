@@ -37,6 +37,19 @@ export class Alerts extends Component {
                 // return <Redirect to='/login' />;
                 // this.forceUpdate();
             }
+            // else if(error.msg)
+            // {
+            //     var newerr = ""+error.msg+""
+            //     if(newerr === ("UNIQUE constraint failed: LocalUser_userprofile.email"))
+            //             alert.error(`User with with the email already exists`)
+            // }
+            if(error.msg.email){
+                console.log("ERROR RECEIVED")
+                alert.error((error.msg.email))
+            }
+            if(error.msg.username){
+                alert.error(error.msg.username)
+            }
         }
 
         if(message !== prevProps.message){
@@ -47,6 +60,8 @@ export class Alerts extends Component {
                 alert.success(message.addBookmark)
             if(message.passwordNotMatch)
                 alert.error(message.passwordNotMatch)
+            if(message.passwordChanged)
+                alert.error(message.passwordChanged)
         }
     }
 

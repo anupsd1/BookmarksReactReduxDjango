@@ -573,12 +573,12 @@ from
         <variable name=":password" dataType="LITERAL" values="anup" />
         <variable name=":first_name" dataType="LITERAL" values="fgg, asdff" />
         <variable name=":last_name" dataType="LITERAL" values="asdfsa, sdfsad, " />
-        <variable name=":is_staff" dataType="LITERAL" values="0" />
+        <variable name=":email" dataType="LITERAL" values="nln@nskaf, kbsk@kbl, " />
         <variable name=":username" dataType="LITERAL" values="qwerty, xyz" />
         <variable name=":date_joined" dataType="LITERAL" values="26.06.2019, " />
         <variable name=":last_login" dataType="LITERAL" values="" />
         <variable name=":is_active" dataType="LITERAL" values="0, " />
-        <variable name=":email" dataType="LITERAL" values="nln@nskaf, kbsk@kbl, " />
+        <variable name=":is_staff" dataType="LITERAL" values="0" />
         <variable name=":is_superuser" dataType="LITERAL" values="0" />
         <variable name=":premium" dataType="LITERAL" values="1, 0" />
       </file>

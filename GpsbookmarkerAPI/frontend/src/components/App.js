@@ -9,6 +9,7 @@ import Dashboard from './leads/Dashboard';
 import Alerts from './layout/Alerts';
 import Login from './accounts/Login';
 import Register from './accounts/Register';
+import MyProfile from './layout/MyProfile'
 
 import PrivateRoute from './common/PrivateRoute';
 import store from '../store';
@@ -18,6 +19,8 @@ import { loadUser } from '../actions/auth'
 //Because there is already a provider from react-redux
 import { Provider as AlertProvider, useAlert } from 'react-alert';
 import AlertTemplate from 'react-alert-template-basic'
+import  Changepassword  from './layout/Changepassword';
+
 
 //Alert options
 const alertOptions = {
@@ -32,6 +35,7 @@ class App extends Component{
     }
 
     render(){
+        console.log("From app js = "+JSON.stringify({store}))
         return (
             <Provider store={store}>
             <AlertProvider
@@ -44,8 +48,10 @@ class App extends Component{
                         <Alerts />
                         <div className="container">
                             <Switch>
-                                <PrivateRoute exact path="/" component={Dashboard} />
                                 
+                                <PrivateRoute exact path="/" component={Dashboard} {...this.props}/>
+                                <PrivateRoute exact path="/myprofile" component={MyProfile} {...this.props}/>
+                                <PrivateRoute exact path="/changepassword" component={Changepassword}  {...this.props}/>
                                 <Route exact path="/register" component={Register} />
                                 <Route exact path='/login' component={Login} />
                                 

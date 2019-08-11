@@ -9,19 +9,25 @@ import store from '../../store';
 export class Form extends Component {
     constructor(props){
         super(props);
+        this.state = {
+            lat: '',
+            lon: '',
+            user: ""+ this.props.user + ""
+        }
     }
 
-    state = {
-        lat: '',
-        lon: '',
-       // user: ''
-    }
+    
 
     
 
     // static propTypes = {
     //     addLead: PropTypes.func.isRequired
     // }
+    componentDidMount(){
+        console.log("USER===="+this.state.user)
+    }
+
+    
 
     onChange = e => this.setState({
         [e.target.name]: e.target.value
@@ -30,13 +36,15 @@ export class Form extends Component {
     onSubmit = e => {
         e.preventDefault();
         // console.log(this.props.user)
-        const user = ""+ this.props.user + "";
+        console.log("THE STATE IS "+JSON.stringify(this.props.mystate))
+        // const user = ""+ this.props.user + "";
+        // console.log("THE USER IS "+user)
         //console.log(myuser)
         // console.log(this.state.user)
         
         
         // const { lat, lon, user } = this.state;
-        const { lat, lon } = this.state;
+        const { lat, lon, user } = this.state;
         
         
         // const lead = { lat, lon, user };
@@ -56,7 +64,7 @@ export class Form extends Component {
         
         //without the following line {lat}, {lon} and {user} give an error as undefined
         // const {lat, lon, user}=this.state;
-        const {lat, lon }=this.state;
+        const {lat, lon, user }=this.state;
         return(
             <div className="card card-body mt-4 mb-4"> 
                 <h2>Add Bookmarks Form </h2>
@@ -103,6 +111,7 @@ export class Form extends Component {
 
 //REMEMBER TO USE ROUND BRACKETS FIRST AND THEN THE CURLY BRACES!!!
 const mapStateToProps = state => ({
+     mystate: state.auth.user,
      user: state.auth.user.id
 })
 
