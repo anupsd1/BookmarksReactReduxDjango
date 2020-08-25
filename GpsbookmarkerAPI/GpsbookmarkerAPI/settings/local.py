@@ -29,6 +29,7 @@ DEBUG = True
 EMAIL_BACKEND = EMAIL_BACKEND
 EMAIL_USE_TLS = EMAIL_USE_TLS
 EMAIL_HOST = EMAIL_HOST
+DEFAULT_FROM_EMAIL = 'FootBuys <noreply@footbuys.com>'
 EMAIL_HOST_USER = EMAIL_HOST_USERNAME
 EMAIL_HOST_PASSWORD = EMAIL_HOST_PASSWORD
 EMAIL_PORT = EMAIL_PORT
@@ -53,13 +54,14 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.sites',
     'rest_framework',
+    'django_rest_passwordreset',
     'knox',
     'rest_auth',
     # 'rest_framework.authtoken',
     'bookmarks',
     'LocalUser',
     'frontend',
-    # 'corsheaders',
+    'corsheaders',
     'oauth2_provider',
     'social_django',
     'rest_framework_social_oauth2',
@@ -114,7 +116,7 @@ AUTHENTICATION_BACKENDS = (
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    # 'corsheaders.middleware.CorsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -122,6 +124,8 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'social_django.middleware.SocialAuthExceptionMiddleware',
 ]
+
+CORS_ORIGIN_ALLOW_ALL = True
 
 
 # SOCIALACCOUNT_PROVIDERS = {

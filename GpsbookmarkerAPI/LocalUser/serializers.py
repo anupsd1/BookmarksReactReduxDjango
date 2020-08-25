@@ -12,15 +12,12 @@ from knox.auth import TokenAuthentication
 from itertools import chain
 from operator import attrgetter
 
-
 from django.contrib.auth import login
 
 # If we use model = User in any of the following, it will return an error-
 # NoneType object does not have an attribute _meta
 # Because in settings.py we have specified -
 # AUTH_USER_MODEL = 'LocalUser.LocalUser'
-
-
 
     # permission_classes = (
     #     permissions.IsAuthenticated,
@@ -37,10 +34,36 @@ class UserProfileSerializer(serializers.HyperlinkedModelSerializer):
         model = UserProfile
         fields = ('id', 'email', 'premium', 'first_name', 'last_name')
 
+
 # Change password
 class ChangePasswordSerializer(serializers.Serializer):
     old_password = serializers.CharField(required=True)
     new_password = serializers.CharField(required=True)
+
+
+# Forgot Password RESET
+# class ForgotPasswordSerializer(serializers.Serializer):
+#     email = serializers.EmailField(required=False)
+#     new_password = serializers.CharField(required=False)
+#
+#     def validate_email(self, data):
+#         # print("DATA IS = "+data)
+#         context_user = self.context.get("user")
+#         # print("USER IS = "+str(context_user))
+#         # localuser = LocalUser.objects.get(username=context_user)
+#         received_email = data
+#         if context_user.email == received_email:
+#             print("EMAIL IS VALID")
+#         else:
+#             print("EMAIL IS NOT VALID ")
+
+class CheckTokenSerializer(serializers.Serializer):
+    token = serializers.CharField(required=True)
+    new_password = serializers.CharField(required=True)
+
+
+class CustomTokenSerializer(serializers.Serializer):
+    token = serializers.CharField()
 
 
 # Update premium for user

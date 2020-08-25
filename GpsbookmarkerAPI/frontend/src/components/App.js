@@ -10,6 +10,7 @@ import Alerts from './layout/Alerts';
 import Login from './accounts/Login';
 import Register from './accounts/Register';
 import MyProfile from './layout/MyProfile'
+import PasswordReset from './accounts/PasswordReset'
 
 import PrivateRoute from './common/PrivateRoute';
 import store from '../store';
@@ -52,8 +53,11 @@ class App extends Component{
                                 <PrivateRoute exact path="/" component={Dashboard} {...this.props}/>
                                 <PrivateRoute exact path="/myprofile" component={MyProfile} {...this.props}/>
                                 <PrivateRoute exact path="/changepassword" component={Changepassword}  {...this.props}/>
+                                <PrivateRoute exact path="/password-reset/token" component={PasswordReset} {...this.props}/>
+
                                 <Route exact path="/register" component={Register} />
                                 <Route exact path='/login' component={Login} />
+
                                 
                             </Switch>
                         </div>

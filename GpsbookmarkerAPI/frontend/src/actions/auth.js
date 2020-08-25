@@ -17,6 +17,8 @@ import {
 } from './types'
 
 
+const fetchurl = "http://127.0.0.1:8000/"
+
 //CHECK TOKEN & LOAD USER
 export const loadUser = () => (dispatch, getState) => {
     //User Loading
@@ -24,7 +26,7 @@ export const loadUser = () => (dispatch, getState) => {
         type: USER_LOADING
     })
 
-    axios.get('/api/auth/user/', tokenConfig(getState))
+    axios.get(fetchurl+'api/auth/user/', tokenConfig(getState))
         .then(res=>{
             // console.log(res)
             console.log("FROM LOAD USER = "+res.data)
@@ -51,7 +53,7 @@ export const makePremium = (email, premium) => (dispatch, getState) => {
         premium
     })
     axios
-        .put("api/auth/updatepremium/", body, tokenConfig(getState))
+        .put(fetchurl+"api/auth/updatepremium/", body, tokenConfig(getState))
         .then(res=>{
             console.log("MAKE PREMIUM RES = "+JSON.stringify(res.data))
             dispatch({
@@ -84,11 +86,13 @@ export const login = (username, password) => dispatch => {
         username, password
     })
     
+    console.log("in  login")
+    console.log(fetchurl+"api/auth/login/", body, config)
     axios
-        .post("api/auth/login/", body, config)
+        .post(fetchurl+"api/auth/login/", body, config)
         .then(res => {
-            // console.log("FRON KIGUB="+JSON.stringify(res))
-            // console.log("FROM KIGUB="+res.data.user.premium)
+            console.log("FRON KIGUB="+JSON.stringify(res))
+            console.log("FROM KIGUB="+res.data.user.premium)
             dispatch({
                 type: LOGIN_SUCCESS,
                 payload: res.data,
@@ -126,7 +130,7 @@ export const gmaillogin = ( first_name, last_name, email, user_id, provider, acc
     })
 
     axios
-        .post('newauth/login/', body, config)
+        .post(fetchurl+'newauth/login/', body, config)
         .then(res => {
             console.log("FROM GMAIL LOGIN = " + JSON.stringify(res.data));
             console.log("FROM GMAILLOGIN = "+res.data.user.premium)
@@ -161,7 +165,7 @@ export const register = ({ username, email, password, first_name, last_name }) =
     const body = JSON.stringify({ username, email, password, first_name, last_name });
 
     axios
-        .post("api/auth/register/", body, config)
+        .post(fetchurl+"api/auth/register/", body, config)
         .then(res =>{
             console.log("AFTER REGISTER"+JSON.stringify(res.data))
             dispatch({
@@ -186,7 +190,7 @@ export const register = ({ username, email, password, first_name, last_name }) =
 export const logout = () => (dispatch, getState) => {
     // null is the body and it won't work without passing the body. it is the syntax when passing headers using POST request
     axios
-        .post("api/auth/logout/", null, tokenConfig(getState))
+        .post(fetchurl+"api/auth/logout/", null, tokenConfig(getState))
         .then(res=> {
             dispatch({
                 type: LOGOUT_SUCCESS

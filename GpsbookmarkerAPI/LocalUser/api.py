@@ -30,7 +30,9 @@ from .serializers import (
                         PremiumUpdateSerializer,
                         UserProfileSerializer,
                         GoogleAccountSerializer,
-                        UpdateEmailSerializer
+                        UpdateEmailSerializer,
+                        # ForgotPasswordSerializer,
+                        CheckTokenSerializer,
                           )
 
 
@@ -219,6 +221,56 @@ class ChangePasswordAPI(generics.UpdateAPIView):
         TokenAuthentication,
     )
 
+    def get_object(self):
+        return self.request.user
+
+    def update(self, request, *args, **kwargs):
+        user = self.get_object()
+        serializer = self.get_serializer(data=request.data)
+
+        if serializer.is_valid():
+            checkpass = user.check_password(serializer.data.get("old_password"))
+            # print("CHECKPASS==="+checkpass)
+            if not checkpass:
+                response = PermissionDenied("Wrong password")
+                print(response)
+                raise response
+            user.set_password(serializer.data.get("new_password"))
+            user.save()
+            return Response("Successfully changed. Please Login again with the new password ", status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+# Forgot password RESET
+class ForgotPasswordAPI(generics.UpdateAPIView):
+    permission_classes = [
+        permissions.IsAuthenticated,
+    ]
+
+    authentication_classes = (
+        TokenAuthentication,
+    )
+
+    # serializer_class = ForgotPasswordSerializer
+
+    def get_object(self):
+        return self.request.user
+
+    def get_serializer_context(self):
+        return {"user": self.request.user}
+
+    def update(self, request, *args, **kwargs):
+        user = self.get_object()
+        serializer = self.get_serializer(data=request.data)
+
+        if serializer.is_valid():
+            return Response("IT IS VALID")
+        else:
+            return Response("INVALID !!")
+
+
+class CheckTokenAPI(generics.UpdateAPIView):
+    serializer_class = CheckTokenSerializer
     def get_object(self):
         return self.request.user
 

@@ -25,3 +25,8 @@ class GmailAccount(models.Model):
 
     def __str__(self):
         return self.gmail_id
+
+
+# class ForgotPasswordTokens(models.Model):
+#     localuser = models.ForeignKey('LocalUser', on_delete=models.CASCADE)
+#     token = models.BigIntegerField()

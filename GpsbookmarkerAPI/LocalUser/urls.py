@@ -1,7 +1,18 @@
 from django.urls import path, include
 from django.conf.urls import url
-from .api import RegisterAPI, LoginAPI, UserAPI, SocialLoginView, UserUpdateAPI, ChangePasswordAPI, ChangeEmailView
+from .api import (
+    RegisterAPI,
+    LoginAPI,
+    UserAPI,
+    SocialLoginView,
+    UserUpdateAPI,
+    ChangePasswordAPI,
+    ChangeEmailView,
+    ForgotPasswordAPI,
+    CheckTokenAPI
+)
 from knox import views as knox_views
+from .singals import CustomPasswordTokenVerificationView
 from knox import auth
 from django.contrib.auth.decorators import login_required
 
@@ -25,8 +36,15 @@ urlpatterns = [
     path(r'api/auth/logallout/', knox_views.LogoutAllView.as_view(), name='knox_logallout'),
     path(r'api/auth/updatepremium/', UserUpdateAPI.as_view()),
     path(r'api/auth/changepassword/', ChangePasswordAPI.as_view()),
+    path(r'api/auth/forgotpassword/', ForgotPasswordAPI.as_view()),
     path(r'newauth/login/', SocialLoginView.as_view()),
     path(r'api/auth/email/', ChangeEmailView.as_view()),
+
+    path(r'api/reset-password/token/', CheckTokenAPI.as_view()),
+
+    path(r'api/reset-password/verify-token/', CustomPasswordTokenVerificationView.as_view(), name='password_reset_verify_token'),
+    path(r'api/reset-password/', include('django_rest_passwordreset.urls', namespace='password_reset')),
+
     # this works- path('api/auth/user/', UserAPI.as_view()),
     path(r'newauth/', include('rest_framework_social_oauth2.urls')),
     path(r'api/myauth/', include('knox.urls'))
