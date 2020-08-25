@@ -1,4 +1,6 @@
-node_modules/
+node_modules/*
 .env
 .babelrc
 email_info.py
+.idea/*
+GpsbookmarkerAPI/settings/production.py
