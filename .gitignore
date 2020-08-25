@@ -1,3 +1,4 @@
 node_modules/
 .env
 .babelrc
+email_info.py
